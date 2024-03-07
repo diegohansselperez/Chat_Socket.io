@@ -3,6 +3,7 @@ import morgan from 'morgan';
 
 import { Server } from 'socket.io';
 import { createServer } from 'node:http';
+import { Socket } from 'node:dgram';
 
 const PORT = process.env.PORT ?? 3001;
 const app = express();
@@ -10,8 +11,11 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server);
 
-io.on('connection', () => {
+io.on('connection', (socket) => {
   console.log('a user has connected!');
+  socket.on('disconnect', () => {
+    console.log('an user disconnected!');
+  });
 });
 
 app.use(morgan('dev'));

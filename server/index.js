@@ -16,6 +16,10 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('an user disconnected!');
   });
+
+  socket.on('chat message', (message) => {
+    io.emit('chat message', message);
+  });
 });
 
 app.use(morgan('dev'));

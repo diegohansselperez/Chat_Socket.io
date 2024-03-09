@@ -1,6 +1,5 @@
 import express from 'express';
 import morgan from 'morgan';
-
 import { Server } from 'socket.io';
 import { createServer } from 'node:http';
 import { Socket } from 'node:dgram';
@@ -17,8 +16,8 @@ io.on('connection', (socket) => {
     console.log('an user disconnected!');
   });
 
-  socket.on('chat message', (message) => {
-    io.emit('chat message', message);
+  socket.on('chat message', (data) => {
+    io.emit('chat message', data);
   });
 });
 

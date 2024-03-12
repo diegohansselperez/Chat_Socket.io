@@ -95,10 +95,12 @@
         const messages = document.getElementById('messages');
 
         socket.on('chat message', (msg) => {
-            const item = "<li>" + msg + "</li>";
 
-            messages.insertAdjacentElement('beforeend', item);
-        })
+            const item = `<li>${msg}</li>`;
+
+            messages.insertAdjacentHTML('beforeend', item);
+
+        });
 
         form.addEventListener("submit", (e) => {
             e.preventDefault()

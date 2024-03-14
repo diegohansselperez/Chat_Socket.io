@@ -6,6 +6,7 @@ import { Socket } from 'node:dgram';
 import dotenv from 'dotenv';
 import { createClient } from '@libsql/client/.';
 
+dotenv.config();
 const PORT = process.env.PORT ?? 3001;
 const app = express();
 
@@ -19,19 +20,33 @@ const db = createClient({
   authToken: process.env.DB_TOKEN,
 });
 
-await db.execute('CREATE TABLE IF NOT EXISTS messages (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  content TEXT
-)');
+  await db.execute('CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    content TEXT
+  )');
+
+
 io.on('connection', (socket) => {
   console.log('a user has connected!');
+
   socket.on('disconnect', () => {
     console.log('an user disconnected!');
   });
 
-  socket.on('chat message', (data) => {
-    console.log('message:', data);
-    io.emit('chat message', data);
+  socket.on('chat message', async (msg) => {
+    let result;
+    try {
+      result = await db.execute({
+        sql: 'INSERT INTO messages (content) VALUES (:msg)',
+        args: {  msg },
+      });
+
+      return result;
+    } catch (error) {
+      console.error(error.message);
+    }
+
+    io.emit('chat message', msg, result.lastInsertRowid.toString());
   });
 });
 
